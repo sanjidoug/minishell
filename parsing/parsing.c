@@ -1,39 +1,39 @@
 #include "minishell.h"
 #include <stdio.h>
 
-char *my_getenv(char **env)
+char *my_getenv(char **env, char *elem)
 {
     t_utils utils;
-    char *path;
+    int i;
+    int j;
+    char *cont_env;
     
-    utils.i = 0;
-    while(env[utils.i] != NULL)
+    cont_env = 0;
+    i = 0;
+    while(env[i] != NULL)
     {  
-        utils.j = 0;
-        if (*env[utils.j] == 'P')
+        if (env[i][0] == elem[0])
         {
-            utils.k = 0;
-            while(utils.k < 4)
-                utils.str[utils.k++] = *env[utils.j++];
-            if (!ft_strcmp(utils.str, "PATH"))
+            utils.len_bequal = 0;
+            j = 0;
+            while(env[i][j++] != '=')
+                utils.len_bequal++;
+            utils.str = malloc(sizeof(char) * utils.len_bequal);
+            j = 0;
+            while(j < utils.len_bequal)
             {
-                printf("fdsf\n");
-                break;   
+                utils.str[j] = env[i][j];
+                j++;
             }
+            utils.str[j] = '\0';
+            if (!ft_strcmp(utils.str, elem))
+                break; 
         }
-        utils.i++;
+        i++;
     }
-    //printf("%c\n", *env[utils.i]);
-    /*utils.i = utils.j;
-    utils.cpt = 0;
-    while (*env[utils.j++])
-        utils.cpt++;
-    path = malloc(sizeof(char) * utils.cpt);
-    utils.j = 0;
-    while (utils.i < utils.cpt)
-        path[utils.j++] = *env[utils.i++];
-    printf("%s\n", path);*/
-    //return(path);
+    if(env[i] != NULL)
+        cont_env = ft_strdup_env(env[i], utils);
+    return(cont_env);
 }
 
 int main(int ac, char **ar, char **env)
@@ -48,6 +48,6 @@ int main(int ac, char **ar, char **env)
         ft_putstr("my_prompt>");
         str = get_next_line(0);
         tab_cmd = ft_split(str);
-        my_getenv(env);
+        my_getenv(env, "PATH");
     }
 }
