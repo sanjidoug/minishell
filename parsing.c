@@ -58,24 +58,77 @@ void ft_cat(t_parse *parse)
     }
 }
 
+void ft_free_tab(char **tab)
+{
+    int i;
+
+    i = 0;
+    while(tab[i] != NULL)
+        free(tab[i++]);
+    free(tab);
+}
+
+int ft_var(char *vr_env, char* line)
+{
+    int i;
+
+    i = 0;
+    if (vr_env == NULL)
+        return(1);
+    while(vr_env[i] && line[i])
+    {
+        if(vr_env[i] != line[i])
+            return(1);
+        i++;
+    }
+    if(line[i] != '=')
+        return(1);
+    return(0);
+}
+
 void ft_export(t_parse *parse, char **env)
 {
     int i;
     int j;
+    int k;
+    char **str;
+    char **vr_env;
 
     i = 0;
     j = 1;
+    k = 0;
     while (env[i] != NULL)
         i++;
+    if (parse->tab_arg[1] == NULL)
+    {
+        while (k < i - 1)
+        {
+            ft_putstr_fd(env[k++], 1);
+            write(1, "\n", 1);
+        }
+    }
     while (parse->tab_arg[j] != NULL)
     {
         if (ft_strchr(parse->tab_arg[j], '='))
         {
-            env[i] = env[i - 1];
-            env[i - 1] = parse->tab_arg[j];
+            str = ft_split(parse->tab_arg[j], '=');
+            if(getenv(str[0]))
+            {
+                k = i - 1;
+                while (ft_var(str[0], env[k]))
+                    k--;
+                env[k] = parse->tab_arg[j];
+            }
+            else
+            {
+                env[i] = env[i - 1];
+                env[i - 1] = parse->tab_arg[j];
+                i++;
+            }
         }
+        ft_free_tab(str);
         j++;
-        i++;
+        
     }
     env[i] = NULL;
 }
@@ -91,22 +144,30 @@ void ft_unset(t_parse *parse, char **env)
     j = 1;
     while (env[i] != NULL)
         i++;
-    save_i = i--;
+    i--;
+    save_i = i;
     while (parse->tab_arg[j] != NULL)
     {   
         i = save_i;
         while (i > -1)
         {
-            //printf("%c\n", env[i][0]);
             str = ft_split(env[i], '=');
-            printf("%s\n", str[0]);
-            if (!ft_strcmp(str[0], env[i]))
-                env[i] = env[i + 1];
+            if (!ft_strcmp(parse->tab_arg[j], str[0]))
+            {
+                while (i < save_i)
+                {
+                    env[i] = env[i + 1];
+                    i++;
+                }
+                break;
+            }
             i--;
+            ft_free_tab(str);
         }
         j++;
+        save_i--;
+        env[i] = NULL;    
     }
-    env[i] = NULL;
 }
 
 void ft_env(char **env)
@@ -116,9 +177,40 @@ void ft_env(char **env)
     i = 0;
     while (env[i] != NULL)
     {
-        ft_putstr(env[i++]);
+        ft_putstr_fd(env[i++], 1);
         write(1, "\n", 1);
     }
+}
+
+void ft_echo(t_parse *parse)
+{
+    int i;
+
+    i = 1;
+    if (!ft_strcmp(parse->tab_arg[1], "-n"))
+        i++;
+    while (parse->tab_arg[i] != NULL)
+    {
+        ft_putstr_fd(parse->tab_arg[i], 1);
+        write(1, " ", 1);
+        i++;
+    }
+    if (ft_strcmp(parse->tab_arg[1], "-n"))
+        write(1, "\n", 1);
+}
+
+char *ft_pwd(t_parse *parse)
+{
+    char *str;
+
+    str = malloc(sizeof(char) * PATH_MAX + 1);
+    str = getcwd(str, PATH_MAX);
+    return(str);
+}
+
+void ft_cd(t_parse *parse)
+{
+
 }
 
 int main(int ac, char **ar, char **env)
@@ -130,7 +222,7 @@ int main(int ac, char **ar, char **env)
     while(1)
     {   
         i = 0;
-        ft_putstr("my_prompt>");
+        ft_putstr_fd("my_prompt>", 1);
         parse.cont_env = getenv("PATH");
         parse.tab_path = ft_split(parse.cont_env, ':');
         parse.tab_cmd = ft_split(get_next_line(0), '|');
@@ -146,10 +238,19 @@ int main(int ac, char **ar, char **env)
             parse.tab_arg = ft_split(parse.tab_cmd[i], ' ');
             if (!ft_strcmp(parse.tab_arg[0], "export"))
                 ft_export(&parse, env);
-            if (!ft_strcmp(parse.tab_arg[0], "unset"))
+            else if (!ft_strcmp(parse.tab_arg[0], "unset"))
                 ft_unset(&parse, env);
-            if (!ft_strcmp(parse.tab_arg[0], "env"))
+            else if (!ft_strcmp(parse.tab_arg[0], "env"))
                 ft_env(env);
+            else if (!ft_strcmp(parse.tab_arg[0], "echo"))
+                ft_echo(&parse);
+            else if (!ft_strcmp(parse.tab_arg[0], "pwd"))
+            {
+                ft_putstr_fd(ft_pwd(&parse), 1);
+                write(1, "\n", 1);
+            }
+             else if (!ft_strcmp(parse.tab_arg[0], "cd"))
+                ft_cd(&parse);
             else
             {
                 if (!ft_strcmp(parse.tab_arg[0],"cat"))

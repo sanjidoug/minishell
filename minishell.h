@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <limits.h>
 
 typedef struct s_parse {
     char **tab_arg;
@@ -15,7 +16,7 @@ typedef struct s_parse {
 }               t_parse;
 
 char			**ft_split(const char *str, char c);
-void ft_putstr(char *str);
+void ft_putstr_fd(char *str, int fd);
 int	ft_strcmp(char *s1, char *s2);
 char *ft_strcat(char *dest, char *src);
 char *ft_strcpy(char *dest, char *src);
