@@ -19,8 +19,10 @@ char			**ft_split(const char *str, char c);
 void ft_putstr_fd(char *str, int fd);
 int	ft_strcmp(char *s1, char *s2);
 char *ft_strcat(char *dest, char *src);
+char *ft_strcat_cd(char *dest, char *src);
 char *ft_strcpy(char *dest, char *src);
 char	*ft_strchr(const char *s, int c);
+char	*ft_strdup(char *src);
 char	*ft_strjoin_path(char const *s1, char const *s2);
 
 #endif

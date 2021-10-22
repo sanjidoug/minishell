@@ -210,7 +210,20 @@ char *ft_pwd(t_parse *parse)
 
 void ft_cd(t_parse *parse)
 {
-
+    char *path;
+    
+    if (parse->tab_arg[1][0] == '~')
+    {
+        path = malloc(sizeof(char) * ft_strlen(parse->tab_arg[1]) + 16);
+        ft_strcpy(path, "/Users/dlescart");
+        ft_strcat_cd(path, parse->tab_arg[1]);
+    }
+    else
+    {
+        path = malloc(sizeof(char) * ft_strlen(parse->tab_arg[1]));
+        ft_strcat_cd(path, parse->tab_arg[1]);
+    }
+    chdir(path);
 }
 
 int main(int ac, char **ar, char **env)
@@ -249,7 +262,7 @@ int main(int ac, char **ar, char **env)
                 ft_putstr_fd(ft_pwd(&parse), 1);
                 write(1, "\n", 1);
             }
-             else if (!ft_strcmp(parse.tab_arg[0], "cd"))
+            else if (!ft_strcmp(parse.tab_arg[0], "cd"))
                 ft_cd(&parse);
             else
             {
