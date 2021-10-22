@@ -36,9 +36,12 @@ void ft_free(t_parse *parse)
     int i;
 
     i = 0;
-    while (parse->tab_path[i] != NULL)
-        free(parse->tab_path[i++]);
-    free(parse->tab_path);
+    if (parse->tab_path != NULL)
+    {
+        while (parse->tab_path[i] != NULL)
+            free(parse->tab_path[i++]);
+        free(parse->tab_path);
+    }
     i = 0;
     while(parse->tab_cmd[i] != NULL)
         free(parse->tab_cmd[i++]);
@@ -208,7 +211,8 @@ char *ft_pwd(t_parse *parse)
     return(str);
 }
 
-void ft_cd(t_parse *parse)
+//ft_cd non termine, il faut mettre a jour env
+void ft_cd(t_parse *parse, char **env)
 {
     char *path;
     
@@ -221,9 +225,29 @@ void ft_cd(t_parse *parse)
     else
     {
         path = malloc(sizeof(char) * ft_strlen(parse->tab_arg[1]));
-        ft_strcat_cd(path, parse->tab_arg[1]);
+        if (parse->cont_env != NULL)
+            ft_strcat(path, parse->cont_env);
+        else
+            ft_strcat(path, parse->tab_arg[1]);
     }
     chdir(path);
+}
+
+void ft_var_env(t_parse *parse)
+{
+    int i;
+    char *str;
+
+    i = 1;
+    str = malloc(sizeof(char) * ft_strlen(parse->tab_arg[1]));
+    while (parse->tab_arg[1][i])
+    {
+        str[i - 1] = parse->tab_arg[1][i];
+        i++;
+    }
+    str[i - 1] = '\0';
+    if (getenv(str))
+        parse->cont_env = getenv(str);
 }
 
 int main(int ac, char **ar, char **env)
@@ -236,19 +260,20 @@ int main(int ac, char **ar, char **env)
     {   
         i = 0;
         ft_putstr_fd("my_prompt>", 1);
-        parse.cont_env = getenv("PATH");
-        parse.tab_path = ft_split(parse.cont_env, ':');
         parse.tab_cmd = ft_split(get_next_line(0), '|');
         if (!ft_strcmp(parse.tab_cmd[0], "exit\n"))
         {
             ft_free(&parse);
             exit(0);
         }
+        parse.cont_env = NULL;
         while (parse.tab_cmd[i] != NULL)
         {
             if (parse.tab_cmd[i][ft_strlen(parse.tab_cmd[i]) - 1] == '\n')
                    parse.tab_cmd[i][ft_strlen(parse.tab_cmd[i]) - 1] = 0;
             parse.tab_arg = ft_split(parse.tab_cmd[i], ' ');
+            if (parse.tab_arg[1] != NULL)
+                ft_var_env(&parse);
             if (!ft_strcmp(parse.tab_arg[0], "export"))
                 ft_export(&parse, env);
             else if (!ft_strcmp(parse.tab_arg[0], "unset"))
@@ -263,9 +288,11 @@ int main(int ac, char **ar, char **env)
                 write(1, "\n", 1);
             }
             else if (!ft_strcmp(parse.tab_arg[0], "cd"))
-                ft_cd(&parse);
+                ft_cd(&parse, env);
             else
             {
+                 parse.cont_env = getenv("PATH");
+                 parse.tab_path = ft_split(parse.cont_env, ':');
                 if (!ft_strcmp(parse.tab_arg[0],"cat"))
                     ft_cat(&parse);
                 parse.tab_arg[0] = add_cmd_to_path(parse.tab_arg[0], parse.tab_path);
