@@ -187,7 +187,8 @@ void ft_echo(t_parse *parse)
     int i;
 
     i = 1;
-    if (!ft_strcmp(parse->tab_arg[1], "-n"))
+    if (parse->tab_arg[1] )
+    if (parse->tab_arg[1] != NULL && !ft_strcmp(parse->tab_arg[1], "-n"))
         i++;
     while (parse->tab_arg[i] != NULL)
     {
@@ -195,7 +196,7 @@ void ft_echo(t_parse *parse)
         write(1, " ", 1);
         i++;
     }
-    if (ft_strcmp(parse->tab_arg[1], "-n"))
+    if (parse->tab_arg[1] == NULL || ft_strcmp(parse->tab_arg[1], "-n"))
         write(1, "\n", 1);
 }
 
@@ -251,23 +252,43 @@ void ft_cd(t_parse *parse, char **env)
 void ft_var_env(t_parse *parse)
 {
     int i;
+    int j;
     char *str;
 
-    i = 1;
-    str = malloc(sizeof(char) * ft_strlen(parse->tab_arg[1]));
-    while (parse->tab_arg[1][i])
+    i = 0;
+    while (parse->tab_arg[i] != NULL)
     {
-        str[i - 1] = parse->tab_arg[1][i];
+        j = 1;
+        str = malloc(sizeof(char) * ft_strlen(parse->tab_arg[i]));
+        while (parse->tab_arg[i][j])
+        {
+            str[j - 1] = parse->tab_arg[i][j];
+            j++;
+        }
+        str[j - 1] = '\0';
+        if (getenv(str))
+        {
+            free(parse->tab_arg[i]);
+            parse->tab_arg[i] = ft_strdup(getenv(str));
+        }
+        free(str);
         i++;
-    }
-    str[i - 1] = '\0';
-    if (getenv(str))
-    {
-        free(parse->tab_arg[1]);
-        parse->tab_arg[1] = ft_strdup(getenv(str));
     }
 }
 
+void ft_lowercase(t_parse *parse)
+{
+    int i;
+
+    i = 0;
+    while (parse->tab_arg[0][i])
+    {
+        if (parse->tab_arg[0][i] > 64 && parse->tab_arg[0][i] < 91)
+            parse->tab_arg[0][i] = parse->tab_arg[0][i] + 32;
+        i++;
+    }
+}
+//gerer ""
 int main(int ac, char **ar, char **env)
 {
     t_parse parse;
@@ -284,18 +305,17 @@ int main(int ac, char **ar, char **env)
         parse.tab_cmd = ft_split(cmd, '|');
         parse.cont_env = getenv("PATH");
         parse.tab_path = ft_split(parse.cont_env, ':');
-        if (!ft_strcmp(parse.tab_cmd[0], "exit\n"))
-        {
-            ft_free(&parse);
-            exit(0);
-        }
         while (parse.tab_cmd[i] != NULL)
         {
-            if (parse.tab_cmd[i][ft_strlen(parse.tab_cmd[i]) - 1] == '\n')
-                   parse.tab_cmd[i][ft_strlen(parse.tab_cmd[i]) - 1] = 0;
             parse.tab_arg = ft_split(parse.tab_cmd[i], ' ');
-            if (parse.tab_arg[1] != NULL)
-                ft_var_env(&parse);
+            if (parse.tab_arg[0][0] != '$')
+                ft_lowercase(&parse);
+            ft_var_env(&parse);
+            if (!ft_strcmp(parse.tab_arg[0], "exit"))
+            {
+                ft_free(&parse);
+                exit(0);
+            }
             if (!ft_strcmp(parse.tab_arg[0], "export"))
                 ft_export(&parse, env);
             else if (!ft_strcmp(parse.tab_arg[0], "unset"))
