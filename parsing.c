@@ -36,12 +36,9 @@ void ft_free(t_parse *parse)
     int i;
 
     i = 0;
-    if (parse->tab_path != NULL)
-    {
-        while (parse->tab_path[i] != NULL)
-            free(parse->tab_path[i++]);
-        free(parse->tab_path);
-    }
+    while (parse->tab_path[i] != NULL)
+        free(parse->tab_path[i++]);
+    free(parse->tab_path);
     i = 0;
     while(parse->tab_cmd[i] != NULL)
         free(parse->tab_cmd[i++]);
@@ -211,16 +208,43 @@ char *ft_pwd(t_parse *parse)
     return(str);
 }
 
-//ft_cd non termine, il faut mettre a jour env
+void ft_update_env(char *pwd, char **env, int oldpwd)
+{
+    int i;
+    char *temp;
+
+    i = 0;
+    if (oldpwd)
+    {
+        while (ft_var("OLDPWD", env[i]))
+            i++;
+        temp = ft_strjoin("OLDPWD=", pwd);
+        env[i] = ft_strdup(temp);
+        free(temp);
+    }
+    else
+    {
+        while (ft_var("PWD", env[i]))
+            i++;
+       temp = ft_strjoin("PWD=", pwd);
+       env[i] = ft_strdup(temp);
+       free(temp);
+    }
+}
 void ft_cd(t_parse *parse, char **env)
 {
     char *path;
+    char pwd[PATH_MAX];
     
-    if (parse->tab_arg[1][0] == '~')
+    if (parse->tab_arg[1] == NULL || parse->tab_arg[1][0] == '~')
         path = ft_strdup(getenv("HOME"));
     else
         path = ft_strdup(parse->tab_arg[1]);
+    getcwd(pwd, PATH_MAX);
+    ft_update_env(pwd, env, 1);
     chdir(path);
+    getcwd(pwd, PATH_MAX);
+    ft_update_env(pwd, env, 0);
     free(path);
 }
 
@@ -249,12 +273,15 @@ int main(int ac, char **ar, char **env)
     t_parse parse;
     int i;
     int status;
+    char *cmd;
     
     while(1)
     {   
         i = 0;
         ft_putstr_fd("my_prompt>", 1);
-        parse.tab_cmd = ft_split(get_next_line(0), '|');
+        cmd = readline("");
+        add_history(cmd);
+        parse.tab_cmd = ft_split(cmd, '|');
         parse.cont_env = getenv("PATH");
         parse.tab_path = ft_split(parse.cont_env, ':');
         if (!ft_strcmp(parse.tab_cmd[0], "exit\n"))

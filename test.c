@@ -2,12 +2,15 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <readline/history.h>
+#include <readline/readline.h>
+#include <editline/readline.h>
+
 
 int main()
 {
-    char *str;
-
-    //str = malloc(sizeof(char) * 9);
-    //str = "dlescart\0";
-    printf("%s\n", $HOME)   ;
+    //char *cmd;
+    //readline(cmd);
+    printf("%s\n", readline(""));
 }

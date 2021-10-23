@@ -23,7 +23,7 @@
 
 size_t	ft_strlen(char const *s);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
-char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strjoin_gnl(char const *s1, char const *s2);
 int		ft_end_of_line(char *str);
 size_t	ft_find_newline(char const *str);
 char	*ft_return_null(char **line);

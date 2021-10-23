@@ -65,7 +65,7 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || fd > FOPEN_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
-	line = ft_strjoin(NULL, buffer);
+	line = ft_strjoin_gnl(NULL, buffer);
 	if (!line)
 		return (ft_return_null(&line));
 	if (ft_find_newline(buffer) != ft_strlen(buffer))
@@ -77,7 +77,7 @@ char	*get_next_line(int fd)
 		if (byte_read < 0)
 			return (ft_return_null(&line));
 		buffer[byte_read] = '\0';
-		line = ft_strjoin(line, buffer);
+		line = ft_strjoin_gnl(line, buffer);
 		if (!line)
 			return (ft_return_null(&line));
 		if (byte_read == BUFFER_SIZE)

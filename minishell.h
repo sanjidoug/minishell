@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <stdio.h>
+#include <readline/history.h>
+#include <readline/readline.h>
 
 typedef struct s_parse {
     char **tab_arg;
@@ -23,6 +26,7 @@ char *ft_strcat_cd(char *dest, char *src);
 char *ft_strcpy(char *dest, char *src);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strdup(char *src);
+char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strjoin_path(char const *s1, char const *s2);
 
 #endif
