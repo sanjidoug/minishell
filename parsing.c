@@ -217,20 +217,11 @@ void ft_cd(t_parse *parse, char **env)
     char *path;
     
     if (parse->tab_arg[1][0] == '~')
-    {
-        path = malloc(sizeof(char) * ft_strlen(parse->tab_arg[1]) + 16);
-        ft_strcpy(path, "/Users/dlescart");
-        ft_strcat_cd(path, parse->tab_arg[1]);
-    }
+        path = ft_strdup(getenv("HOME"));
     else
-    {
-        path = malloc(sizeof(char) * ft_strlen(parse->tab_arg[1]));
-        if (parse->cont_env != NULL)
-            ft_strcat(path, parse->cont_env);
-        else
-            ft_strcat(path, parse->tab_arg[1]);
-    }
+        path = ft_strdup(parse->tab_arg[1]);
     chdir(path);
+    free(path);
 }
 
 void ft_var_env(t_parse *parse)
@@ -247,7 +238,10 @@ void ft_var_env(t_parse *parse)
     }
     str[i - 1] = '\0';
     if (getenv(str))
-        parse->cont_env = getenv(str);
+    {
+        free(parse->tab_arg[1]);
+        parse->tab_arg[1] = ft_strdup(getenv(str));
+    }
 }
 
 int main(int ac, char **ar, char **env)
@@ -261,12 +255,13 @@ int main(int ac, char **ar, char **env)
         i = 0;
         ft_putstr_fd("my_prompt>", 1);
         parse.tab_cmd = ft_split(get_next_line(0), '|');
+        parse.cont_env = getenv("PATH");
+        parse.tab_path = ft_split(parse.cont_env, ':');
         if (!ft_strcmp(parse.tab_cmd[0], "exit\n"))
         {
             ft_free(&parse);
             exit(0);
         }
-        parse.cont_env = NULL;
         while (parse.tab_cmd[i] != NULL)
         {
             if (parse.tab_cmd[i][ft_strlen(parse.tab_cmd[i]) - 1] == '\n')
@@ -291,8 +286,6 @@ int main(int ac, char **ar, char **env)
                 ft_cd(&parse, env);
             else
             {
-                 parse.cont_env = getenv("PATH");
-                 parse.tab_path = ft_split(parse.cont_env, ':');
                 if (!ft_strcmp(parse.tab_arg[0],"cat"))
                     ft_cat(&parse);
                 parse.tab_arg[0] = add_cmd_to_path(parse.tab_arg[0], parse.tab_path);
