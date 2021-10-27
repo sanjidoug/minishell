@@ -288,11 +288,31 @@ void ft_lowercase(t_parse *parse)
         i++;
     }
 }
-//gerer ""
+
+char *ft_replace(char *cmd)
+{
+    int i;
+    int j;
+
+    i = 0;
+    j = 0;
+    while (cmd[i])
+    {
+        if (cmd[i] == '"' || cmd[i] == 39)
+            cmd[i] = ' ';
+        i++;
+    }
+    return (cmd);
+}
+
+//value of exit status "$?"
+//signals
+//redirections and pipes
 int main(int ac, char **ar, char **env)
 {
     t_parse parse;
     int i;
+    int j;
     int status;
     char *cmd;
     
@@ -307,6 +327,7 @@ int main(int ac, char **ar, char **env)
         parse.tab_path = ft_split(parse.cont_env, ':');
         while (parse.tab_cmd[i] != NULL)
         {
+            ft_strcpy(parse.tab_cmd[i], ft_replace(parse.tab_cmd[i]));
             parse.tab_arg = ft_split(parse.tab_cmd[i], ' ');
             if (parse.tab_arg[0][0] != '$')
                 ft_lowercase(&parse);
