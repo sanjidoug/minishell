@@ -289,22 +289,35 @@ void ft_lowercase(t_parse *parse)
     }
 }
 
-char *ft_replace(char *cmd)
+char *ft_shift_tab(char *cmd)
 {
     int i;
     int j;
+    int cpt;
+    char *str;
 
     i = 0;
     j = 0;
+    cpt = 0;
+    str = malloc(sizeof(char) * ft_strlen(cmd));
     while (cmd[i])
     {
-        if (cmd[i] == '"' || cmd[i] == 39)
-            cmd[i] = ' ';
-        i++;
+        str[j] = cmd[i];
+        if (cmd[i] == '"')
+            cpt++;
+        if (cpt % 2 == 0 && cmd[i + 1])
+        {
+            i++;
+            while (cmd[i] == ' ')
+                i++;
+        }
+        else
+            i++;
+        j++;
     }
-    return (cmd);
+    str[j] = '\0';
+    return (str);
 }
-
 //value of exit status "$?"
 //signals
 //redirections and pipes
@@ -327,8 +340,13 @@ int main(int ac, char **ar, char **env)
         parse.tab_path = ft_split(parse.cont_env, ':');
         while (parse.tab_cmd[i] != NULL)
         {
-            ft_strcpy(parse.tab_cmd[i], ft_replace(parse.tab_cmd[i]));
-            parse.tab_arg = ft_split(parse.tab_cmd[i], ' ');
+            if (ft_strchr(parse.tab_cmd[i], '"'))
+            {
+                ft_strcpy(parse.tab_cmd[i], ft_shift_tab(parse.tab_cmd[i]));
+                parse.tab_arg = ft_split(parse.tab_cmd[i], '"');
+            }
+            else
+                parse.tab_arg = ft_split(parse.tab_cmd[i], ' ');
             if (parse.tab_arg[0][0] != '$')
                 ft_lowercase(&parse);
             ft_var_env(&parse);
