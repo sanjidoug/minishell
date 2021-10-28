@@ -256,6 +256,22 @@ void ft_var_env(t_parse *parse)
     char *str;
 
     i = 0;
+    /*while (parse->tab_cmd[i])
+    {
+        if (parse->tab_cmd[i] == '"' && parse->tab_cmd[i + 1] == '$')
+        {
+            i += 2;
+            j = 0;
+            while (parse->tab_cmd[i] != '"')
+                str[j++] = parse->tab_cmd[i++];
+            str[j] = '\0';
+            if (getenv(str))
+            {
+
+            }
+        }
+
+    }*/
     while (parse->tab_arg[i] != NULL)
     {
         j = 1;
@@ -302,22 +318,28 @@ char *ft_shift_tab(char *cmd)
     str = malloc(sizeof(char) * ft_strlen(cmd));
     while (cmd[i])
     {
-        str[j] = cmd[i];
-        if (cmd[i] == '"')
-            cpt++;
-        if (cpt % 2 == 0 && cmd[i + 1])
+        //if ((cmd[i] == ' ' && cmd[i + 1] != ' ') || cmd[i] == 39)
+            //cmd[i] = '"';
+        while (cmd[i] == ' ')
+            i++;
+        if (cmd[i] == 39)
         {
+            str[j++] = '"';
             i++;
-            while (cmd[i] == ' ')
-                i++;
         }
-        else
-            i++;
-        j++;
+        if (i != 0 && cmd[i - 1] == ' ')
+            str[j++] = '"';
+        if (cmd[i] != ' ')
+            str[j++] = cmd[i];
+        if (cmd[i + 1] && cmd[i + 1] == ' ')
+            str[j++] = '"';
+        i++;
     }
     str[j] = '\0';
+    printf("%s\n", str);
     return (str);
 }
+
 //value of exit status "$?"
 //signals
 //redirections and pipes
@@ -340,7 +362,7 @@ int main(int ac, char **ar, char **env)
         parse.tab_path = ft_split(parse.cont_env, ':');
         while (parse.tab_cmd[i] != NULL)
         {
-            if (ft_strchr(parse.tab_cmd[i], '"'))
+            if (ft_strchr(parse.tab_cmd[i], '"') || ft_strchr(parse.tab_cmd[i], 39))
             {
                 ft_strcpy(parse.tab_cmd[i], ft_shift_tab(parse.tab_cmd[i]));
                 parse.tab_arg = ft_split(parse.tab_cmd[i], '"');
@@ -376,7 +398,10 @@ int main(int ac, char **ar, char **env)
                     ft_cat(&parse);
                 parse.tab_arg[0] = add_cmd_to_path(parse.tab_arg[0], parse.tab_path);
                 if(fork() == 0)
-                    execve(parse.tab_arg[0], parse.tab_arg, env);
+                {
+                    if(execve(parse.tab_arg[0], parse.tab_arg, env) == -1)
+                        exit(0);
+                }
             }
             i++;
             wait(&status);
