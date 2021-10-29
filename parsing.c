@@ -248,45 +248,63 @@ void ft_cd(t_parse *parse, char **env)
     ft_update_env(pwd, env, 0);
     free(path);
 }
+int is_simple_quotes(int line, t_parse *parse)
+{
+    int i;
 
+    i = 0;
+    while (parse->line[i] != -1)
+    {
+        if (line == parse->line[i])
+            return (1);
+        i++;
+    }
+    return (0);
+}
 void ft_var_env(t_parse *parse)
 {
     int i;
     int j;
+    int k;
+    int l;
     char *str;
+    char *var;
 
     i = 0;
-    /*while (parse->tab_cmd[i])
-    {
-        if (parse->tab_cmd[i] == '"' && parse->tab_cmd[i + 1] == '$')
-        {
-            i += 2;
-            j = 0;
-            while (parse->tab_cmd[i] != '"')
-                str[j++] = parse->tab_cmd[i++];
-            str[j] = '\0';
-            if (getenv(str))
-            {
-
-            }
-        }
-
-    }*/
     while (parse->tab_arg[i] != NULL)
     {
-        j = 1;
-        str = malloc(sizeof(char) * ft_strlen(parse->tab_arg[i]));
+        str = malloc(sizeof(char) * ft_strlen(parse->tab_arg[i]) + PATH_MAX);
+        j = 0;
+        k = 0;
         while (parse->tab_arg[i][j])
         {
-            str[j - 1] = parse->tab_arg[i][j];
+            l = 0;
+            if (parse->tab_arg[i][j] == '$' && !is_simple_quotes(i, parse))
+            {
+                var = malloc(sizeof(char) * PATH_MAX);
+                j++;
+                while (parse->tab_arg[i][j] != ' ' && parse->tab_arg[i][j])
+                {
+                    var[l++] = parse->tab_arg[i][j];
+                    j++;
+                }
+                j--;
+                var[l] = '\0';
+                if (getenv(var))
+                {
+                    str[k] = '\0';
+                    ft_strcat(str, getenv(var));
+                    k += ft_strlen(getenv(var));
+                }
+                free(var);
+            }
+            else
+                str[k++] = parse->tab_arg[i][j];
             j++;
         }
-        str[j - 1] = '\0';
-        if (getenv(str))
-        {
-            free(parse->tab_arg[i]);
-            parse->tab_arg[i] = ft_strdup(getenv(str));
-        }
+        str[k] = '\0';
+        free(parse->tab_arg[i]);
+        parse->tab_arg[i] = ft_strdup(str);
         free(str);
         i++;
     }
@@ -305,39 +323,80 @@ void ft_lowercase(t_parse *parse)
     }
 }
 
-char *ft_shift_tab(char *cmd)
+char *ft_shift_tab(t_parse *parse)
 {
     int i;
     int j;
+    int k;
     int cpt;
+    //char c;
     char *str;
 
     i = 0;
     j = 0;
-    cpt = 0;
-    str = malloc(sizeof(char) * ft_strlen(cmd));
-    while (cmd[i])
+    k = 0;
+    str = malloc(sizeof(char) * ft_strlen(parse->tab_cmd[0]));
+    cpt = -1;
+    parse->unclosed_quotes = 0;
+    while (parse->tab_cmd[0][i])
     {
-        //if ((cmd[i] == ' ' && cmd[i + 1] != ' ') || cmd[i] == 39)
-            //cmd[i] = '"';
-        while (cmd[i] == ' ')
+        while (parse->tab_cmd[0][i] == ' ')
             i++;
-        if (cmd[i] == 39)
-        {
+        if (parse->tab_cmd[0][i] == '"' || parse->tab_cmd[0][i] == 39)
+        {   
+            cpt++;
             str[j++] = '"';
+            parse->c = parse->tab_cmd[0][i];
+            if (parse->tab_cmd[0][i] == 39)
+                parse->line[k++] = cpt;
+            i++;
+            while (parse->tab_cmd[0][i] != parse->c && parse->tab_cmd[0][i])
+                str[j++] = parse->tab_cmd[0][i++];
+            if (parse->tab_cmd[0][i] != parse->c)
+                parse->unclosed_quotes = 1;
             i++;
         }
-        if (i != 0 && cmd[i - 1] == ' ')
+        else
+        {   
+            cpt++;
             str[j++] = '"';
-        if (cmd[i] != ' ')
-            str[j++] = cmd[i];
-        if (cmd[i + 1] && cmd[i + 1] == ' ')
-            str[j++] = '"';
-        i++;
+            while (parse->tab_cmd[0][i] != ' ' && parse->tab_cmd[0][i])
+                str[j++] = parse->tab_cmd[0][i++];
+        }
     }
+    parse->line[k] = -1;
     str[j] = '\0';
-    printf("%s\n", str);
     return (str);
+}
+
+void ft_insert(t_parse *parse)
+{
+    int i;
+    int j;
+
+    i = 0;
+    j = 0;
+    while (parse->tab_arg[i] != NULL)
+        i++;
+    i--;
+    while (parse->tab_arg[i][j])
+        j++;
+    free(parse->tab_arg[i]);
+    parse->tab_arg[i] = malloc(sizeof(char) * j + 3);
+    if (parse->c == 39)
+    {
+        parse->tab_arg[i][j + 1] = '"';
+        parse->tab_arg[i][j + 2] = '\0';
+    }
+    else
+        parse->tab_arg[i][j + 1] = '\0';
+    while (j > 0)
+    {
+        parse->tab_arg[i][j] = parse->tab_arg[i][j - 1];
+        j--;
+    }
+    parse->tab_arg[i][j] = parse->c;
+    printf("%d\n", ft_strlen(parse->tab_arg[i]));
 }
 
 //value of exit status "$?"
@@ -362,13 +421,10 @@ int main(int ac, char **ar, char **env)
         parse.tab_path = ft_split(parse.cont_env, ':');
         while (parse.tab_cmd[i] != NULL)
         {
-            if (ft_strchr(parse.tab_cmd[i], '"') || ft_strchr(parse.tab_cmd[i], 39))
-            {
-                ft_strcpy(parse.tab_cmd[i], ft_shift_tab(parse.tab_cmd[i]));
-                parse.tab_arg = ft_split(parse.tab_cmd[i], '"');
-            }
-            else
-                parse.tab_arg = ft_split(parse.tab_cmd[i], ' ');
+            ft_strcpy(parse.tab_cmd[i], ft_shift_tab(&parse));
+            parse.tab_arg = ft_split(parse.tab_cmd[i], '"');
+            if (parse.unclosed_quotes)
+                ft_insert(&parse);
             if (parse.tab_arg[0][0] != '$')
                 ft_lowercase(&parse);
             ft_var_env(&parse);

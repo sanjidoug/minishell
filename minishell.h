@@ -16,6 +16,9 @@ typedef struct s_parse {
     char *cont_env;
     char **tab_path;
     char *path;
+    int line[100];
+    int unclosed_quotes;
+    char c;
 }               t_parse;
 
 char			**ft_split(const char *str, char c);
