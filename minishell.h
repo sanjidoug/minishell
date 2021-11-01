@@ -21,6 +21,13 @@ typedef struct s_parse {
     char c;
 }               t_parse;
 
+typedef struct s_counter {
+    int i;
+    int j;
+    int k;
+    int l;
+}              t_counter;
+
 char			**ft_split(const char *str, char c);
 void ft_putstr_fd(char *str, int fd);
 int	ft_strcmp(char *s1, char *s2);
