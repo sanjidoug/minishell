@@ -1,7 +1,6 @@
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
-#include "./get_next_line/get_next_line.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -10,15 +9,16 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
+unsigned int exit_status;
+
 typedef struct s_parse {
     char **tab_arg;
     char **tab_cmd;
     char *cont_env;
     char **tab_path;
     char *path;
-    int line[100];
-    int unclosed_quotes;
-    char c;
+    int dollar;
+    char *tab_simple_quotes;
 }               t_parse;
 
 typedef struct s_counter {
@@ -34,8 +34,11 @@ int	ft_strcmp(char *s1, char *s2);
 char *ft_strcat(char *dest, char *src);
 char *ft_strcat_cd(char *dest, char *src);
 char *ft_strcpy(char *dest, char *src);
+char	*ft_itoa(int nb);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strdup(char *src);
+void	ft_bzero(void *b, int n);
+int ft_strlen(const char *str);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strjoin_path(char const *s1, char const *s2);
 
