@@ -346,8 +346,8 @@ void ft_quotes(t_parse *parse)
         count.l = 0;
         while (parse->tab_arg[count.i][count.j])
         {
-             if (ft_is_quotes(parse->tab_arg[count.i][count.j]) && ft_closed_quotes(parse->tab_arg[count.i], count.j))
-             {
+            if (ft_is_quotes(parse->tab_arg[count.i][count.j]) && ft_closed_quotes(parse->tab_arg[count.i], count.j))
+            {
                 if (parse->tab_arg[count.i][count.j] == 39)
                     parse->tab_simple_quotes[count.k++] = '1';
                 else
@@ -355,19 +355,24 @@ void ft_quotes(t_parse *parse)
                 count.j++;
                 while (!ft_is_quotes(parse->tab_arg[count.i][count.j]) && parse->tab_arg[count.i][count.j])
                     str[count.l++] = parse->tab_arg[count.i][count.j++];
-             }
-             else
+            }
+            else
+            {
                 str[count.l++] = parse->tab_arg[count.i][count.j];
-             count.j++;
+                parse->tab_simple_quotes[count.k++] = '0';
+            }
+            count.j++;
         }
         str[count.l] = '\0';
-        parse->tab_simple_quotes[count.k] = '\0';
-        printf("%s\n", parse->tab_simple_quotes);
         free(parse->tab_arg[count.i]);
         parse->tab_arg[count.i] = ft_strdup(str);
         free(str);
+        if (count.k != count.i)
+            parse->tab_simple_quotes[count.k++] = '0';
         count.i++;
     }
+    parse->tab_simple_quotes[count.k] = '\0';
+    printf("%s\n", parse->tab_simple_quotes);
 }
 
 int ft_dollar(char *line)
