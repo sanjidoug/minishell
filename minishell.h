@@ -19,6 +19,7 @@ typedef struct s_parse {
     char *path;
     int dollar;
     char *tab_simple_quotes;
+    int fd[2];
 }               t_parse;
 
 typedef struct s_counter {
