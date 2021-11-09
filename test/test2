@@ -1,0 +1,15 @@
+total 120
+drwxr-xr-x  14 tsehl  4219    476 Nov  9 11:11 .
+drwx------   3 tsehl  4219    102 Nov  9 06:36 ..
+drwxr-xr-x  14 tsehl  4219    476 Nov  9 11:15 .git
+drwxr-xr-x   3 tsehl  4219    102 Nov  9 09:27 Sources
+drwxr-xr-x  14 tsehl  4219    476 Nov  9 06:36 Utils
+-rwxr-xr-x   1 tsehl  4219  19036 Nov  9 11:11 a.out
+drwxr-xr-x   5 tsehl  4219    170 Nov  9 06:36 get_next_line
+-rw-r--r--   1 tsehl  4219   1057 Nov  9 11:04 minishell.h
+-rw-r--r--   1 tsehl  4219  11350 Nov  9 11:11 parsing.c
+-rw-r--r--   1 tsehl  4219   1127 Nov  9 06:36 pipe.c
+-rw-r--r--   1 tsehl  4219  11311 Nov  9 11:01 test.c
+-rw-r--r--   1 tsehl  4219      6 Nov  9 11:15 test1
+-rw-r--r--   1 tsehl  4219      0 Nov  9 11:16 test2
+-rw-r--r--   1 tsehl  4219      6 Nov  9 11:16 test3

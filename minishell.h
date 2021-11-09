@@ -20,6 +20,7 @@ typedef struct s_parse {
     int dollar;
     char *tab_simple_quotes;
     int fd[2];
+    int fd_redir;
 }               t_parse;
 
 typedef struct s_counter {
