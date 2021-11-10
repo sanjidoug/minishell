@@ -277,10 +277,6 @@ char *ft_var_env(char *line, char *tab_simple_quotes, int index)
             while (line[count.i] && line[count.i] != ' ' &&  line[count.i] != '$')
                 var[count.j++] = line[count.i++];
             var[count.j] = '\0';
-<<<<<<< HEAD
-=======
-            //printf("var: %s\n", var);
->>>>>>> 5d1358c6618095d7742d122fbfa6b9b9d7d159c9
             if (getenv(var))
             {
                 ft_strcat(str, getenv(var));
@@ -371,10 +367,6 @@ void ft_quotes(t_parse *parse)
             parse->tab_simple_quotes[count.k++] = '0';
     }
     parse->tab_simple_quotes[count.k] = '\0';
-<<<<<<< HEAD
-=======
-    //printf("%s\n", parse->tab_simple_quotes);
->>>>>>> 5d1358c6618095d7742d122fbfa6b9b9d7d159c9
 }
 
 int ft_dollar(char *line)
@@ -572,11 +564,7 @@ int main(int ac, char **ar, char **env)
     int j;
     int status;
     char *cmd;
-<<<<<<< HEAD
     char **tab_str;
-=======
-    int out;
->>>>>>> 5d1358c6618095d7742d122fbfa6b9b9d7d159c9
     
     while(1)
     {   
@@ -588,7 +576,6 @@ int main(int ac, char **ar, char **env)
         parse.tab_path = ft_split_custom(parse.cont_env, ':', &parse);
         while (parse.tab_cmd[i] != NULL)
         {
-<<<<<<< HEAD
             parse.tab_arg = ft_split_custom(parse.tab_cmd[i], ' ', &parse);
             tab_str = ft_unsplit(&parse);
             int k = 0;
@@ -598,10 +585,6 @@ int main(int ac, char **ar, char **env)
             j = 0;
             /*while (parse.tab_arg[j] != NULL)
                 printf("tab_arg: %s\n", parse.tab_arg[j++]);*/
-=======
-            pipe(parse.fd);
-            parse.tab_arg = ft_split(parse.tab_cmd[i], ' ');
->>>>>>> 5d1358c6618095d7742d122fbfa6b9b9d7d159c9
             ft_quotes(&parse);
             if (parse.tab_arg[0][0] != '$')
                 ft_lowercase(&parse);
@@ -611,54 +594,35 @@ int main(int ac, char **ar, char **env)
                 ft_free(&parse);
                 exit(0);
             }
-            if(fork() == 0)
+            if (!ft_strcmp(parse.tab_arg[0], "export"))
+                ft_export(&parse, env);
+            else if (!ft_strcmp(parse.tab_arg[0], "unset"))
+                ft_unset(&parse, env);
+            else if (!ft_strcmp(parse.tab_arg[0], "env"))
+                ft_env(env);
+            else if (!ft_strcmp(parse.tab_arg[0], "echo"))
+                ft_echo(&parse);
+            else if (!ft_strcmp(parse.tab_arg[0], "pwd"))
             {
-                if(parse.tab_cmd[i + 1] != NULL)
+                ft_putstr_fd(ft_pwd(&parse), 1);
+                write(1, "\n", 1);
+            }
+            else if (!ft_strcmp(parse.tab_arg[0], "cd"))
+                ft_cd(&parse, env);
+            else
+            {
+                if (!ft_strcmp(parse.tab_arg[0],"cat"))
+                    ft_cat(&parse);
+                parse.tab_arg[0] = add_cmd_to_path(parse.tab_arg[0], parse.tab_path);
+                if(fork() == 0)
                 {
-                    close(parse.fd[0]);
-                    close(1);
-                    dup(parse.fd[1]);
-                    close(parse.fd[1]);
-                }
-                if(i != 0)
-                {
-                    close(0);
-                    dup(out);
-                    close(out);
-                }
-                if (!ft_strcmp(parse.tab_arg[0], "export"))
-                    ft_export(&parse, env);
-                else if (!ft_strcmp(parse.tab_arg[0], "unset"))
-                    ft_unset(&parse, env);
-                else if (!ft_strcmp(parse.tab_arg[0], "env"))
-                    ft_env(env);
-                else if (!ft_strcmp(parse.tab_arg[0], "echo"))
-                    ft_echo(&parse);
-                else if (!ft_strcmp(parse.tab_arg[0], "pwd"))
-                {
-                    ft_putstr_fd(ft_pwd(&parse), 1);
-                    write(1, "\n", 1);
-                }
-                else if (!ft_strcmp(parse.tab_arg[0], "cd"))
-                    ft_cd(&parse, env);
-                else
-                {
-                    //close(1);
-                    //parse.fd_redir = open("./test2",O_RDWR);
-                    //parse.fd_redir = open("./test3",O_RDWR);
-                    //parse.fd_redir = dup(1);
-                    //close(parse.fd_redir);
-                    parse.tab_arg[0] = add_cmd_to_path(parse.tab_arg[0], parse.tab_path);
                     exit_status = execve(parse.tab_arg[0], parse.tab_arg, env);
                     if(exit_status == -1)
                         exit(0);
                 }
-                exit(0);
             }
             i++;
             wait(&status);
-            out = parse.fd[0];
-            close(parse.fd[1]);
         }
         ft_free(&parse);
     }

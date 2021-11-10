@@ -19,13 +19,8 @@ typedef struct s_parse {
     char *path;
     char quotes;
     char *tab_simple_quotes;
-<<<<<<< HEAD
     int dollar;
     int *tab_spaces;
-=======
-    int fd[2];
-    int fd_redir;
->>>>>>> 5d1358c6618095d7742d122fbfa6b9b9d7d159c9
 }               t_parse;
 
 typedef struct s_counter {

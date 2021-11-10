@@ -357,7 +357,7 @@ char *ft_shift_tab(t_parse *parse)
             while (parse->tab_cmd[0][count.i] != parse->c && parse->tab_cmd[0][count.i])
                 str[count.j++] = parse->tab_cmd[0][count.i++];
         }
-        else
+        else 
         {   
             cpt++;
             str[count.j++] = '"';
@@ -467,6 +467,7 @@ int main(int ac, char **ar, char **env)
                     ft_cd(&parse, env);
                 else
                 {
+                    
                     parse.tab_arg[0] = add_cmd_to_path(parse.tab_arg[0], parse.tab_path);
                     execve(parse.tab_arg[0], parse.tab_arg, env);
                 }
