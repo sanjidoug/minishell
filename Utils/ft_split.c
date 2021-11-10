@@ -1,81 +1,67 @@
 #include "../minishell.h"
 
-
-static int		unleah(char **str, int size)
+static int	count_strs(char const *s, char c)
 {
-	while (size--)
-		free(str[size]);
-	return (-1);
-}
+	int	count;
 
-static int		count_words(const char *str, char charset)
-{
-	int	i;
-	int	words;
-
-	words = 0;
-	i = 0;
-	while (str[i] != '\0')
+	count = 0;
+	while (*s != '\0')
 	{
-		if ((str[i + 1] == charset || str[i + 1] == '\0') == 1
-				&& (str[i] == charset || str[i] == '\0') == 0)
-			words++;
-		i++;
-	}
-	return (words);
-}
-
-static void		write_word(char *dest, const char *from, char charset)
-{
-	int	i;
-
-	i = 0;
-	while ((from[i] == charset || from[i] == '\0') == 0)
-	{
-		dest[i] = from[i];
-		i++;
-	}
-	dest[i] = '\0';
-}
-
-static int		write_split(char **split, const char *str, char charset)
-{
-	int		i;
-	int		j;
-	int		word;
-
-	word = 0;
-	i = 0;
-	while (str[i] != '\0')
-	{
-		if ((str[i] == charset || str[i] == '\0') == 1)
-			i++;
-		else
+		if (*s != c)
 		{
-			j = 0;
-			while ((str[i + j] == charset || str[i + j] == '\0') == 0)
-				j++;
-			if ((split[word] = (char*)malloc(sizeof(char) * (j + 1))) == NULL)
-				return (unleah(split, word - 1));
-			write_word(split[word], str + i, charset);
-			i += j;
-			word++;
+			count++;
+			while (*s != '\0' && *s != c)
+				s++;
 		}
+		else
+			s++;
 	}
-	return (0);
+	return (count);
 }
 
-char			**ft_split(const char *str, char c)
+char	**ft_split_custom(char const *s, char c, t_parse *parse)
 {
-	char	**res;
-	int		words;
+	int		len;
+	int i;
+	int cpt;
+	int	index;
+	int is_not_space;
+	int *tab_spaces;
+	const char	*start;
+	char		**split;
 
-	words = count_words(str, c);
-	if ((res = (char**)malloc(sizeof(char*) * (words + 1))) == NULL)
-		return (NULL);
-	res[words] = NULL;
-	if (write_split(res, str, c) == -1)
-		return (NULL);
-	return (res);
+	split = (char **) malloc(((count_strs(s, c)) + 1) * sizeof(*split));
+	if (!split)
+		return (0);
+	index = 0;
+	parse->tab_spaces = malloc(sizeof(int) * 500);
+	i = 0;
+	is_not_space = 0;
+	while (*s != '\0')
+	{
+		cpt = 0;
+		if (*s != ' ')
+			is_not_space = 1;
+		while (*s && *s == c)
+		{
+			if (c == ' ' && is_not_space)
+				cpt++;
+			s++;
+		}
+		if (cpt != 0)
+			parse->tab_spaces[i++] = cpt;
+		is_not_space = 1;
+		start = s;
+		len = 0;
+		while (*s && *s != c)
+		{
+			s++;
+			len++;
+		}
+		if (*(s - 1) != c)
+			split[index++] = ft_substr(start, 0, len);
+	}
+	parse->tab_spaces[i] = -1;
+	split[index] = 0;
+	return (split);
 }
-
