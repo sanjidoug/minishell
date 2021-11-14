@@ -1,0 +1,79 @@
+
+void ft_redirection(t_parse *parse)
+{
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	while(parse->tab_arg[i] != NULL)
+		j += ft_count(parse->tab_arg[i++], '>');
+	parse->redo = malloc(sizeof(char *) * (j + 1));
+	i = 0;
+	j = 0;
+	while(parse->tab_arg[i] != NULL)
+	{
+		if (ft_strchr(parse->tab_arg[i], '>'))
+			ft_redir_out(parse, i, &parse->redo[j++]);
+		i++;
+	}
+	parse->redo[j].append = -100;
+}
+
+void ft_redir_out(t_parse *parse,int index, t_redo *redo)
+{
+	int i;
+	
+	i = 0;
+	parse->redir_out = 1;
+	redo->append = 0;
+	while(parse->tab_arg[index][i] != '>')
+		i++;
+	ft_delchar(parse->tab_arg[index], i);
+	if(parse->tab_arg[index][i] == '>')
+		redo->append = ft_delchar(parse->tab_arg[index], i);
+	if(parse->tab_arg[index][i] == 0)
+	{
+		if(i == 0)
+			ft_delstr(parse->tab_arg, index);
+		else
+			index++;
+		i = 0;
+	}
+	redo->file = ft_strjoin("./", ft_strdup(parse->tab_arg[index] + i));
+	/*if(parse->fout == NULL) gestion d'erreur a faire
+		return(redir_error(parse));*/
+	if(i == 0)
+			ft_delstr(parse->tab_arg, index);
+	else
+		ft_bzero(parse->tab_arg[index] + i, ft_strlen(parse->tab_arg[index]) - i);
+}
+
+void ft_redir_fd(t_parse *parse)
+{
+	int i;
+
+	i = 0;
+	while(parse->redo[i].append != -100)
+	{
+		if(parse->redo[i].append > 0)
+			parse->redo[i].fd = open(parse->redo[i].file,  O_CREAT| O_APPEND, 0777);
+		else
+			parse->redo[i].fd = open(parse->redo[i].file, O_WRONLY | O_CREAT, 0777);
+		i++;
+		//free(parse->fout);
+	}
+	//printf("yo\n");
+	dup2(parse->redo[0].fd, 1);
+}
+
+int free_red(t_parse *parse)
+{
+	int i;
+
+	i = 0;
+	while(parse->redo[i].append != -100)
+		free(parse->redo[i++].file);
+	free(parse->redo);
+	return (0);
+}
