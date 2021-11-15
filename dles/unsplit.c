@@ -51,12 +51,20 @@ void ft_cpy_str(t_parse *parse, t_utils *utils, t_counter *count, char **tab_str
 
 void ft_cl_quotes(t_parse *parse, t_utils *utils, t_counter *count, char **tab_str)
 {
+    int save_i;
+    int index;
     if (!utils->cl_quotes)
     {
         if (ft_check_quotes(parse, count->i + 1))
         {
-            utils->end = ft_strlen(parse->tab_arg[count->i + 1]) 
-                + (ft_strlen(parse->tab_arg[count->i]));
+            utils->end = 0;
+            index = ft_check_quotes(parse, count->i + 1);
+            save_i = count->i;
+            while (parse->tab_arg[save_i] != NULL && save_i <= index)
+            {
+                utils->end += ft_strlen(parse->tab_arg[save_i]);
+                save_i++;
+            }
             count->j = 0;
             count->l = 0;
             ft_cpy_str(parse, utils, count, tab_str);
@@ -105,8 +113,5 @@ char **ft_unsplit(t_parse *parse)
     tab_str = malloc(sizeof(char *) * ft_nb_arg(parse->tab_arg) + 1);
     ft_parse_quotes(parse, &utils, &count, tab_str);
     tab_str[count.m] = NULL;
-    /*int k = 0;
-    while (tab_str[k] != NULL)
-        printf("tab_str: %s\n", tab_str[k++]);*/
     return (tab_str);
 }

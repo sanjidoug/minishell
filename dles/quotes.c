@@ -35,7 +35,7 @@ int ft_check_quotes(t_parse *parse, int i)
         {
             index++;
             if (parse->tab_arg[i][j] == parse->quotes)
-                return (index);
+                return (i);
             j++;
         }
         i++;
@@ -45,11 +45,20 @@ int ft_check_quotes(t_parse *parse, int i)
 
 void ft_parse_quote(t_parse *parse, t_counter *count, char *str)
 {
+    char *s;
+    int i;
+    int j;
+    int save_j;
+
+    j = 0;
+    parse->str_dollar = malloc(sizeof(char) * 1000);
     while (parse->tab_arg[count->i][count->j])
     {
         if (ft_is_quotes(parse->tab_arg[count->i][count->j]) 
             && ft_closed_quotes(parse->tab_arg[count->i], count->j))
         {
+            if (ft_is_quotes(parse->tab_arg[count->i][count->j]))
+
             parse->quotes = parse->tab_arg[count->i][count->j];
             if (parse->tab_arg[count->i][count->j] == 39)
                 parse->tab_simple_quotes[count->k++] = '1';
@@ -61,7 +70,11 @@ void ft_parse_quote(t_parse *parse, t_counter *count, char *str)
                     str[count->l++] = parse->tab_arg[count->i][count->j++];
         }
         else
+        {
             str[count->l++] = parse->tab_arg[count->i][count->j];
+            parse->str_dollar[j++] = parse->tab_arg[count->i][count->j];
+        }
+        parse->str_dollar[j] = '\0';
         count->j++;
     }
 }

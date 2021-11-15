@@ -24,7 +24,7 @@ char *ft_parse_path(char *path, int fd, char **tab_path, char *cmd)
         free(path);
         i++;
     }
-    return (NULL);
+    return (cmd);
 }
 
 char *add_cmd_to_path(char *cmd, char **tab_path)

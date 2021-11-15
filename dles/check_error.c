@@ -7,13 +7,13 @@ void ft_check_error_exit(t_parse *parse)
     if (parse->tab_arg[1] != NULL && !ft_isdigit(parse->tab_arg[1][0]))
     {
         str = ft_strdup(parse->tab_arg[1]);
-        printf("sh: exit: %s: numeric argument required\n", str);
+        printf("minishell: exit: %s: numeric argument required\n", str);
         g_exit_status = 255;
         exit(g_exit_status);
     }
     if (ft_nb_arg(parse->tab_arg) > 2)
     {
-        printf("sh: exit: too many arguments\n");
+        printf("minishell: exit: too many arguments\n");
         g_exit_status = 1;
     }
     else
@@ -31,7 +31,7 @@ void ft_check_error_ex_un(t_parse *parse)
         if (ft_isdigit(parse->tab_arg[i][0]))
         {
             nb =  ft_strdup(parse->tab_arg[i]);
-            printf("sh: export: `%s': not a valid identifier\n", nb);
+            printf("minishell: export: `%s': not a valid identifier\n", nb);
             free(nb);
         }
         i++;

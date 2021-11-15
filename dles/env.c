@@ -24,19 +24,64 @@ void ft_update_env(char *pwd, char **env, int oldpwd)
     }
 }
 
-void ft_parse_line(char *line, char *tab_simple_quotes, char *var, t_counter *count, char *str, int index)
+int ft_close(int index, char *str)
+{
+    int i;
+
+    i = index + 1;
+    while(str[i])
+    {
+        if(str[i] == str[index])
+            return(1);
+        i++;
+    }
+    return(0);
+}
+
+int ft_inter(int pos, char *str)
+{
+    int i;
+
+    i = 0;
+    while(str[i])
+    {
+        if(str[i] == '"' && ft_close(i++ ,str))
+        {
+            while(str[i] && str[i] != '"')
+            {
+                if(i++ == pos)
+                    return(1);
+            }
+        }
+        if(str[i] == 39 && ft_close(i++ ,str))
+        {
+            while(str[i] && str[i] != 39)
+            {
+                if(i++ == pos)
+                    return(0);
+            }
+        }
+        if (i == pos)
+            return(1);
+        i++;
+    }
+    return(1);
+}
+
+void ft_parse_line(char *line, char *var, t_counter *count, char *str, int index)
 {
     while (line[count->i])
     {
-        if (line[count->i] == '$' && tab_simple_quotes[index] == '0')
+        if (line[count->i] == '$' && ft_inter(count->i, line))
         {
             var = malloc(sizeof(char) * PATH_MAX + 1);
             ft_bzero(var, ft_strlen(var));
             count->i++;
             count->j = 0;
-            while (line[count->i] && line[count->i] != ' ' &&  line[count->i] != '$')
+            while (line[count->i] && line[count->i] != ' ' && line[count->i] != '$' && !ft_is_quotes(line[count->i]))
                 var[count->j++] = line[count->i++];
             var[count->j] = '\0';
+            printf("var: %s\n", var);
             if (getenv(var))
             {
                 ft_strcat(str, getenv(var));
@@ -46,11 +91,10 @@ void ft_parse_line(char *line, char *tab_simple_quotes, char *var, t_counter *co
         }
         else
             str[count->k++] = line[count->i++];
-
     }
 }
 
-char *ft_var_env(char *line, char *tab_simple_quotes, int index)
+char *ft_var_env(char *line, int index)
 {
     t_counter count;
     char *var;
@@ -61,7 +105,7 @@ char *ft_var_env(char *line, char *tab_simple_quotes, int index)
     count.k = 0;
     str = malloc(sizeof(char) * ft_strlen(line) + PATH_MAX + 1);
     str[0] = '\0';
-    ft_parse_line(line, tab_simple_quotes, var, &count, str, index);
+    ft_parse_line(line, var, &count, str, index);
     str[count.k] = '\0';
     return (str);  
 }
@@ -92,7 +136,8 @@ void ft_set_env(t_parse *parse)
         {
             str = ft_strdup(parse->tab_arg[j]);
             free(parse->tab_arg[j]);
-            parse->tab_arg[j] = ft_var_env(str, parse->tab_simple_quotes, j);
+            parse->tab_arg[j] = ft_var_env(str, j);
+            free(str);
         }
         j++;
     }

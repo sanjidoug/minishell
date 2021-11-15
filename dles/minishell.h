@@ -9,8 +9,13 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <sys/wait.h>
+#include <signal.h>
 
-unsigned int g_exit_status;
+int g_exit_status;
+int g_pid;
+
+typedef void (*sighandler_t)(int);
+sighandler_t signal(int signum, sighandler_t handler);
 
 typedef struct s_parse {
     char **tab_arg;
@@ -22,6 +27,7 @@ typedef struct s_parse {
     char *tab_simple_quotes;
     int dollar;
     int *tab_spaces;
+    char *str_dollar;
 }               t_parse;
 
 typedef struct s_utils {
@@ -40,6 +46,12 @@ typedef struct s_counter {
     int l;
     int m;
 }              t_counter;
+
+typedef struct s_signals {
+    int sigint;
+    int sigquit;
+    int exit_status;
+}               t_signals;
 
 char	**ft_split_custom(char const *s, char c, t_parse *parse);
 void ft_putstr_fd(char *str, int fd);
@@ -69,7 +81,7 @@ void ft_quotes(t_parse *parse);
 int ft_nb_spaces(char *str);
 void ft_lowercase(t_parse *parse);
 int ft_nb_arg(char **tab_arg);
-char *ft_var_env(char *line, char *tab_simple_quotes, int index);
+char *ft_var_env(char *line, int index);
 void ft_set_env(t_parse *parse);
 int ft_var(char *vr_env, char* line);
 void ft_env(char **env);
@@ -81,6 +93,11 @@ void ft_unset(t_parse *parse, char **env);
 void ft_update_env(char *pwd, char **env, int oldpwd);
 void ft_free(t_parse *parse);
 void ft_free_tab(char **tab);
+void ft_free_tab_arg(t_parse *parse);
 char *add_cmd_to_path(char *cmd, char **tab_path);
+void sig_int();
+void sig_quit2();
+void sig_quit();
+void sig_int2();
 
 #endif
