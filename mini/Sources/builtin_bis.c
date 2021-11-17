@@ -48,6 +48,7 @@ void	ft_export(t_parse *parse, char **env)
 	count.i = 0;
 	count.j = 1;
 	count.k = 0;
+	tab_str = NULL;
 	ft_check_error_ex_un(parse);
 	while (env[count.i] != NULL)
 		count.i++;
@@ -97,6 +98,7 @@ void	ft_unset(t_parse *parse, char **env)
 
 	count.i = 0;
 	count.j = 1;
+	tab_str = NULL;
 	ft_check_error_ex_un(parse);
 	while (env[count.i] != NULL)
 		count.i++;

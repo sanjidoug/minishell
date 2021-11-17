@@ -1,35 +1,47 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dlescart <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/17 17:18:13 by dlescart          #+#    #+#             */
+/*   Updated: 2021/11/17 17:20:46 by dlescart         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-int ft_free(t_parse *parse)
+int	ft_free(t_parse *parse)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while(parse->tab_arg[i] != NULL)
-        free(parse->tab_arg[i++]);
-    if (parse->tab_arg)
-        free(parse->tab_arg);   
-    i = 0; 
-    while (parse->tab_cmd[i] != NULL)
-        free(parse->tab_cmd[i++]);
-    if (parse->tab_cmd)
-        free(parse->tab_cmd);
-    i = 0;
-    while (parse->tab_path[i] != NULL)
-        free(parse->tab_path[i++]);
-    if (parse->tab_path)
-        free(parse->tab_path);
-    return (0);
+	i = 0;
+	while (parse->tab_arg[i] != NULL)
+		free(parse->tab_arg[i++]);
+	if (parse->tab_arg)
+		free(parse->tab_arg);
+	i = 0;
+	while (parse->tab_cmd[i] != NULL)
+		free(parse->tab_cmd[i++]);
+	if (parse->tab_cmd)
+		free(parse->tab_cmd);
+	i = 0;
+	while (parse->tab_path[i] != NULL)
+		free(parse->tab_path[i++]);
+	if (parse->tab_path)
+		free(parse->tab_path);
+	return (0);
 }
 
-void ft_free_tab(char **tab)
+void	ft_free_tab(char **tab)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    if(!tab)
-        return ;
-    while(tab[i] != NULL)
-        free(tab[i++]);
-    free(tab);
+	i = 0;
+	if (!tab)
+		return ;
+	while (tab[i] != NULL)
+		free(tab[i++]);
+	free(tab);
 }

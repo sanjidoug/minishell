@@ -6,7 +6,7 @@
 /*   By: dlescart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/16 23:47:08 by dlescart          #+#    #+#             */
-/*   Updated: 2021/11/17 00:03:48 by dlescart         ###   ########.fr       */
+/*   Updated: 2021/11/17 17:25:55 by dlescart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ char	*ft_var_env(char *line, char **env)
 	count.i = 0;
 	count.j = 0;
 	count.k = 0;
+	var = NULL;
 	str = ft_parse_line(line, var, &count, env);
 	str[count.k] = '\0';
 	return (str);

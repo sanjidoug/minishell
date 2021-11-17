@@ -6,7 +6,7 @@
 /*   By: dlescart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 03:29:33 by dlescart          #+#    #+#             */
-/*   Updated: 2021/11/17 03:43:36 by dlescart         ###   ########.fr       */
+/*   Updated: 2021/11/17 17:16:41 by dlescart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,15 @@ int	ft_nb_spaces(char *str)
 
 	nb_spaces = 0;
 	i = 0;
-	if(!str)
-		return(0);
+	if (!str)
+		return (0);
 	while (str[i])
 	{
 		if (str[i] == ' ')
 			nb_spaces++;
-		while (str[i++] == ' ');
+		while (str[i] == ' ')
+			i++;
+		i++;
 	}
 	return (nb_spaces);
 }

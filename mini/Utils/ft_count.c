@@ -1,17 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_count.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dlescart <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/17 19:00:22 by dlescart          #+#    #+#             */
+/*   Updated: 2021/11/17 19:01:12 by dlescart         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-int ft_count(char *str, char c)
+int	ft_count(char *str, char c)
 {
-	int i;
+	int	i;
 	int	j;
 
 	i = 0;
 	j = 0;
-	while(str[i])
+	while (str[i])
 	{
-		if(str[i] == c)
+		if (str[i] == c)
 			j++;
 		i++;
 	}
-	return(j);
+	return (j);
 }

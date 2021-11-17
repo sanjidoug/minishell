@@ -57,12 +57,6 @@ int	ft_check_quotes(t_parse *parse, int i)
 
 void	ft_parse_quote(t_parse *parse, t_counter *count, char *str)
 {
-	char	*s;
-	int		i;
-	int		j;
-	int		save_j;
-
-	j = 0;
 	while (parse->tab_arg[count->i][count->j])
 	{
 		if (ft_is_quotes(parse->tab_arg[count->i][count->j])

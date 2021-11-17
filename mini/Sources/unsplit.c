@@ -6,7 +6,7 @@
 /*   By: dlescart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 03:00:24 by dlescart          #+#    #+#             */
-/*   Updated: 2021/11/17 03:24:11 by dlescart         ###   ########.fr       */
+/*   Updated: 2021/11/17 17:15:00 by dlescart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ void	ft_parse_quotes(t_parse *parse, t_utils *utils,
 		utils->cl_quotes = 1;
 		ft_parse_quotes2(parse, utils, count);
 		count->k = 0;
-		tab_str[count->m] = malloc(sizeof(char) * ft_strlen(parse->tab_cmd[0]) + 10000);
+		tab_str[count->m] = malloc(sizeof(char)
+				* ft_strlen(parse->tab_cmd[0]) + 1);
 		if (!tab_str[count->m])
 			return ;
 		ft_cl_quotes(parse, utils, count, tab_str);
@@ -109,10 +110,12 @@ char	**ft_unsplit(t_parse *parse)
 	count.i = 0;
 	utils.save_j = 0;
 	count.m = 0;
-	tab_str = malloc(sizeof(char *) * ft_nb_arg(parse->tab_arg) + 10000);
+	tab_str = malloc(sizeof(char *)
+			* ft_nb_arg(parse->tab_arg) + 1);
 	if (!tab_str)
 		return (NULL);
 	ft_parse_quotes(parse, &utils, &count, tab_str);
 	tab_str[count.m] = NULL;
+	free(parse->tab_spaces);
 	return (tab_str);
 }

@@ -12,10 +12,11 @@
 
 #include "../minishell.h"
 
-char	*ft_take_env(char **env, char *var, t_counter *count)
+char	*ft_take_env(char **env, t_counter *count, char *line)
 {
 	char	*str;
 
+	free(line);
 	count->k = 0;
 	str = malloc(sizeof(char) * ft_strlen(env[count->i]));
 	if (!str)
@@ -44,7 +45,7 @@ char	*ft_getenv(char **env, char *var)
 			str[count.k++] = env[count.i][count.j++];
 		str[count.k] = '\0';
 		if (!ft_strcmp(var, str))
-			return (ft_take_env(env, var, &count));
+			return (ft_take_env(env, &count, str));
 		count.i++;
 	}
 	return (NULL);

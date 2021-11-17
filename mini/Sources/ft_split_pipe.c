@@ -6,7 +6,7 @@
 /*   By: dlescart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 17:01:08 by dlescart          #+#    #+#             */
-/*   Updated: 2021/11/17 17:01:51 by dlescart         ###   ########.fr       */
+/*   Updated: 2021/11/17 20:13:28 by dlescart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 int	ft_inter_q(int pos, char *str)
 {
-    int	i;
+	int	i;
 
-    i = 0;
+	i = 0;
 	while (str[i])
 	{
-		if (str[i] == '"' && ft_close(i++ ,str))
+		if (str[i] == '"' && ft_close(i++, str))
 		{
 			while (str[i] && str[i] != '"')
 			{
@@ -27,7 +27,7 @@ int	ft_inter_q(int pos, char *str)
 					return (0);
 			}
 		}
-		if (str[i] == 39 && ft_close(i++ ,str))
+		if (str[i] == 39 && ft_close(i++, str))
 		{
 			while (str[i] && str[i] != 39)
 			{
@@ -41,9 +41,9 @@ int	ft_inter_q(int pos, char *str)
 	return (1);
 }
 
-char	**ft_pipe_error()
+char	**ft_pipe_error(void)
 {
-	g_exit_status =	258;
+	g_exit_status = 258;
 	ft_putstr_fd("minishell: syntax error near unexpected token `|'", 2);
 	return (NULL);
 }
@@ -63,6 +63,8 @@ char	*ft_laststr(char *str, char c)
 		i++;
 	}
 	ret = malloc(sizeof(char) * (ft_strlen(str) + 1));
+	if (!ret)
+		return (NULL);
 	i = 0;
 	if (str[j] == c)
 		j++;
@@ -97,13 +99,13 @@ char	**ft_parse_str(char *str, t_counter *count, char **tab)
 	return (tab);
 }
 
-char **ft_split_pipe(char *str)
+char	**ft_split_pipe(char *str)
 {
 	t_counter	count;
 	char		**tab;
 
 	init_count(&count);
-	tab = malloc(sizeof(char *) * (ft_count(str ,'|') + 1 + 1));
+	tab = malloc(sizeof(char *) * (ft_count(str, '|') + 1 + 1));
 	if (!tab || !str)
 		return (NULL);
 	ft_parse_str(str, &count, tab);

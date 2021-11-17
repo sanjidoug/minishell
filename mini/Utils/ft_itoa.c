@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dlescart <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/17 19:07:09 by dlescart          #+#    #+#             */
+/*   Updated: 2021/11/17 19:09:51 by dlescart         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-int		len(long nb)
+int	len(long nb)
 {
-	int		len;
+	int	len;
 
 	len = 0;
 	if (nb < 0)
@@ -20,14 +32,13 @@ int		len(long nb)
 
 char	*ft_itoa(int nb)
 {
-	char *str;
+	char	*str;
 	long	n;
 	int		i;
 
 	n = nb;
 	i = len(n);
-	if (!(str = (char*)malloc(sizeof(char) * (i + 1))))
-		return (NULL);
+	str = (char *)malloc(sizeof(char) * (i + 1));
 	str[i--] = '\0';
 	if (n == 0)
 	{

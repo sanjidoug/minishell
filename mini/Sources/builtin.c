@@ -46,7 +46,7 @@ void	ft_echo(t_parse *parse)
 	g_exit_status = 0;
 }
 
-char	*ft_pwd(t_parse *parse)
+char	*ft_pwd(void)
 {
 	char	*str;
 

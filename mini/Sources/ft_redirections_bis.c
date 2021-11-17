@@ -6,7 +6,7 @@
 /*   By: dlescart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 16:43:49 by dlescart          #+#    #+#             */
-/*   Updated: 2021/11/17 16:51:18 by dlescart         ###   ########.fr       */
+/*   Updated: 2021/11/17 20:12:20 by dlescart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ void	read_until(char *end)
 	{
 		free(line);
 		line = readline("> ");
+		if (!line)
+			break ;
 		if (ft_strncmp(line, end, ft_strlen(end))
 			|| ft_strlen(line) != ft_strlen(end))
 			ft_putendl_fd(line, fd);
