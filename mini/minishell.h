@@ -34,7 +34,6 @@ typedef struct s_parse {
     char quotes;
     int dollar;
     int *tab_spaces;
-    char *str_dollar;
     int fd[2];
     char **fout;
     int redir_out;
@@ -119,7 +118,7 @@ int ft_delchar(char *str, int i);
 int ft_delstr(char **str, int index);
 int ft_redirection(t_parse *parse);
 int free_red(t_parse *parse);
-void ft_redir_in(t_parse *parse,int index, t_redo *redin);
+int ft_redir_in(t_parse *parse,int index, t_redo *redin);
 int ft_delfile(t_parse *parse, int n, int s);
 void ft_fd_in(t_parse *parse);
 char *ft_parse_file(char *str);
@@ -127,11 +126,22 @@ void init_count(t_counter *count);
 int ft_search_redir(t_parse *parse, t_counter *count, int i);
 void sig_int();
 void sigint_fork();
+void ft_putendl_fd(char *s, int fd);
 char *ft_getenv(char **env, char *var);
 int		ft_isalpha(int c);
 void ft_update_env(char *pwd, char **env, int oldpwd);
 int ft_close(int index, char *str);
+void	read_until(char *end);
+int	double_redir(t_redo *redin);
+int	ft_strncmp(const char *s1, const char *s2, size_t n);
+int ft_is_fill(char *str, char c);
+char **ft_pipe_error();
+int ft_inter_q(int pos, char *str);
+char **ft_split_pipe(char *str);
+char *ft_laststr(char *str, char c);
 int	ft_dollar(char *line);
 int ft_is_question_mark(t_parse *parse);
+
+char            **ft_split(const char *str, char c);
 
 #endif

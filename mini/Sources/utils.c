@@ -19,12 +19,13 @@ int	ft_nb_spaces(char *str)
 
 	nb_spaces = 0;
 	i = 0;
+	if(!str)
+		return(0);
 	while (str[i])
 	{
 		if (str[i] == ' ')
 			nb_spaces++;
-		while (str[i] == ' ')
-			i++;
+		while (str[i++] == ' ');
 	}
 	return (nb_spaces);
 }

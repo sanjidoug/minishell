@@ -20,7 +20,7 @@ void	ft_check_error_exit(t_parse *parse)
 	{
 		str = ft_strdup(parse->tab_arg[1]);
 		ft_putstr_fd(ft_strjoin("minishell: exit: ", str), 2);
-		ft_putstr_fd(":  numeric argument required\n", 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
 		g_exit_status = 255;
 		exit(g_exit_status);
 	}
