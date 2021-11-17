@@ -1,30 +1,25 @@
 #include "../minishell.h"
 
-void ft_free_tab_arg(t_parse *parse)
+int ft_free(t_parse *parse)
 {
     int i;
 
     i = 0;
-    if(!parse->tab_arg)
-        return ;
     while(parse->tab_arg[i] != NULL)
         free(parse->tab_arg[i++]);
-    free(parse->tab_arg);    
-}
-
-void ft_free(t_parse *parse)
-{
-    int i;
-
-    i = 0;
+    if (parse->tab_arg)
+        free(parse->tab_arg);   
+    i = 0; 
     while (parse->tab_cmd[i] != NULL)
         free(parse->tab_cmd[i++]);
-    free(parse->tab_cmd);
+    if (parse->tab_cmd)
+        free(parse->tab_cmd);
     i = 0;
     while (parse->tab_path[i] != NULL)
         free(parse->tab_path[i++]);
-    free(parse->tab_path);
-
+    if (parse->tab_path)
+        free(parse->tab_path);
+    return (0);
 }
 
 void ft_free_tab(char **tab)

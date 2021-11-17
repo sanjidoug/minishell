@@ -10,12 +10,14 @@
 #include <readline/readline.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <termios.h>
 
 int g_exit_status;
-int g_pid;
 
 typedef void (*sighandler_t)(int);
 sighandler_t signal(int signum, sighandler_t handler);
+
+struct termios saved;
 
 typedef struct s_redo{
     int fd;
@@ -30,7 +32,6 @@ typedef struct s_parse {
     char **tab_path;
     char *path;
     char quotes;
-    char *tab_simple_quotes;
     int dollar;
     int *tab_spaces;
     char *str_dollar;
@@ -64,12 +65,13 @@ typedef struct s_counter {
 
 typedef struct s_signals {
     int sigint;
-    int sigquit;
     int exit_status;
 }               t_signals;
 
+void check_leaks();
+
 char	**ft_split_custom(char const *s, char c, t_parse *parse);
-void ft_putstr_fd(char *str, int fd);
+int ft_putstr_fd(char *str, int fd);
 int	ft_strcmp(char *s1, char *s2);
 char *ft_strcat(char *dest, char *src);
 char *ft_strcat_cd(char *dest, char *src);
@@ -92,12 +94,11 @@ int ft_nb_arg(char **tab_arg);
 char **ft_unsplit(t_parse *parse);
 int ft_check_quotes(t_parse *parse, int i);
 void ft_edit_tab_arg(t_parse *parse, char **tab_str);
-void ft_quotes(t_parse *parse);
+char *ft_quotes(t_parse *parse);
 int ft_nb_spaces(char *str);
 void ft_lowercase(t_parse *parse);
 int ft_nb_arg(char **tab_arg);
-char *ft_var_env(char *line, int index);
-void ft_set_env(t_parse *parse);
+void ft_set_env(t_parse *parse, char **env);
 int ft_var(char *vr_env, char* line);
 void ft_env(char **env);
 void ft_echo(t_parse *parse);
@@ -106,9 +107,8 @@ void ft_cd(t_parse *parse, char **env);
 void ft_export(t_parse *parse, char **env);
 void ft_unset(t_parse *parse, char **env);
 void ft_update_env(char *pwd, char **env, int oldpwd);
-void ft_free(t_parse *parse);
+int ft_free(t_parse *parse);
 void ft_free_tab(char **tab);
-void ft_free_tab_arg(t_parse *parse);
 char *add_cmd_to_path(char *cmd, char **tab_path);
 int ft_find_next_char(char *str, char c);
 int ft_count(char *str, char c);
@@ -126,8 +126,12 @@ char *ft_parse_file(char *str);
 void init_count(t_counter *count);
 int ft_search_redir(t_parse *parse, t_counter *count, int i);
 void sig_int();
-void sig_quit2();
-void sig_quit();
-void sig_int2();
+void sigint_fork();
+char *ft_getenv(char **env, char *var);
+int		ft_isalpha(int c);
+void ft_update_env(char *pwd, char **env, int oldpwd);
+int ft_close(int index, char *str);
+int	ft_dollar(char *line);
+int ft_is_question_mark(t_parse *parse);
 
 #endif

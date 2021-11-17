@@ -1,5 +1,4 @@
 #include "./minishell.h"
-#include <stdio.h>
 
 int main(int ac, char **ar, char **env)
 {
@@ -9,7 +8,12 @@ int main(int ac, char **ar, char **env)
     int status;
     int tmp_g_exit_status;
     char *cmd;
-    
+    char **tab_str;
+
+    //signaux problemes cat
+    //free env 
+    //exit status signaux
+    //perror
     while(1)
     {   
         i = 0;
@@ -20,6 +24,7 @@ int main(int ac, char **ar, char **env)
         if(!cmd && g_exit_status != 200)
         {
             g_exit_status = tmp_g_exit_status;
+            rl_replace_line("", 0);
             ft_putstr_fd("exit\n", 1);
             exit(0);
         }
@@ -34,15 +39,19 @@ int main(int ac, char **ar, char **env)
             parse.redir_out = 0;
             parse.redir_in  = 0;
             parse.tab_arg = ft_split_custom(parse.tab_cmd[i], ' ', &parse);
-            if(parse.tab_arg[1] != NULL && ft_strcmp(parse.tab_arg[1], "$?"))
-                ft_set_env(&parse);
-            ft_quotes(&parse);
+            tab_str = ft_unsplit(&parse);
+            ft_edit_tab_arg(&parse, tab_str);
+            if (!parse.tab_arg)
+                return (ft_free(&parse));
+            if(parse.tab_arg[1] != NULL && !ft_is_question_mark(&parse))
+                ft_set_env(&parse, env);
+            if(!ft_quotes(&parse))
+                return (ft_free(&parse));
             if (parse.tab_arg[0][0] != '$')
                 ft_lowercase(&parse);
-            j = 0;
             if (!ft_strcmp(parse.tab_arg[0], "exit"))
             {
-                 ft_putstr_fd("exit\n", 1);
+                ft_putstr_fd("exit\n", 1);
                 ft_check_error_exit(&parse);
                 if (parse.tab_arg[1] != NULL && ft_nb_arg(parse.tab_arg) < 3)
                     g_exit_status = ft_atoi(parse.tab_arg[1]);
@@ -54,11 +63,17 @@ int main(int ac, char **ar, char **env)
                 else
                     break;
             }
+            else if (!ft_strcmp(parse.tab_arg[0], "export") && parse.tab_arg[1] != NULL)
+                    ft_export(&parse, env);
+            else if (!ft_strcmp(parse.tab_arg[0], "unset"))
+                    ft_unset(&parse, env);
+            else if (!ft_strcmp(parse.tab_arg[0], "cd"))
+                    ft_cd(&parse, env);
             if (ft_redirection(&parse))
                 break;
-            //printf("cmd = %s\n", parse.tab_arg[0]);
             if(fork() == 0)
             {
+                signal(SIGINT, sigint_fork);
                 if(parse.tab_cmd[i + 1] != NULL)
                 {
                     close(parse.fd[0]);
@@ -76,10 +91,8 @@ int main(int ac, char **ar, char **env)
                     ft_fd_out(&parse);
                 if (parse.redir_in != 0)
                     ft_fd_in(&parse);
-                if (!ft_strcmp(parse.tab_arg[0], "export"))
+                if (!ft_strcmp(parse.tab_arg[0], "export") && parse.tab_arg[1] == NULL)
                     ft_export(&parse, env);
-                else if (!ft_strcmp(parse.tab_arg[0], "unset"))
-                    ft_unset(&parse, env);
                 else if (!ft_strcmp(parse.tab_arg[0], "env"))
                     ft_env(env);
                 else if (!ft_strcmp(parse.tab_arg[0], "echo"))
@@ -89,13 +102,13 @@ int main(int ac, char **ar, char **env)
                     ft_putstr_fd(ft_pwd(&parse), 1);
                     write(1, "\n", 1);
                 }
-                else if (!ft_strcmp(parse.tab_arg[0], "cd"))
-                    ft_cd(&parse, env);
-                else
+                else if (ft_strcmp(parse.tab_arg[0], "export") && ft_strcmp(parse.tab_arg[0], "unset") && ft_strcmp(parse.tab_arg[0], "cd"))
                 {
                     parse.tab_arg[0] = add_cmd_to_path(parse.tab_arg[0], parse.tab_path);
                     execve(parse.tab_arg[0], parse.tab_arg, env);
-                    printf("minishell: %s: command not found\n", parse.tab_arg[0]);
+                    ft_putstr_fd("minishell: ", 2);
+                    ft_putstr_fd(ft_strjoin(parse.tab_arg[0], ": "), 2);
+                    perror("");
                     exit(127);
                 }
                 exit(0);
@@ -119,5 +132,7 @@ int main(int ac, char **ar, char **env)
         }
         ft_free_tab(parse.tab_path);
         ft_free_tab(parse.tab_cmd);
+        int i = 0;
+        //check_leaks();
     }
 }
